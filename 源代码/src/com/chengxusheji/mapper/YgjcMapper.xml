@@ -1,0 +1,49 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.YgjcMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加员工奖惩记录 -->
+	<insert id="addYgjc" parameterType="ygjc">
+		insert into t_ygjc(jclx,title,content,employeeObj,jcsj) values 
+		(#{jclx},#{title},#{content},#{employeeObj.employeeNo},#{jcsj})
+	</insert>
+
+	<!-- 按照查询条件分页查询员工奖惩记录 -->
+	<select id="queryYgjc" resultMap="ygjcMap" >
+		select t_ygjc.* from t_ygjc,t_employee ${where} and t_ygjc.employeeObj = t_employee.employeeNo limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="ygjcMap" type="ygjc">
+        <id property="jcId" column="jcId" />
+        <association property="employeeObj" column="employeeObj" select="com.chengxusheji.mapper.EmployeeMapper.getEmployee" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有员工奖惩记录 -->
+	<select id="queryYgjcList" resultMap="ygjcMap" >
+		select t_ygjc.* from t_ygjc,t_employee ${where} and t_ygjc.employeeObj = t_employee.employeeNo
+	</select>
+
+    <!-- 按照查询条件的员工奖惩记录数 -->
+	<select id="queryYgjcCount" resultType="int">
+		select count(*) from t_ygjc,t_employee ${where} and t_ygjc.employeeObj = t_employee.employeeNo
+	</select>
+
+	<!-- 根据主键查询某个员工奖惩记录 -->
+	<select id="getYgjc" parameterType="int" resultMap="ygjcMap">
+		select * from t_ygjc where t_ygjc.jcId = #{jcId}
+	</select>
+
+	<!-- 更新员工奖惩记录 -->
+	<update id="updateYgjc" parameterType="ygjc">
+		update t_ygjc set jclx=#{jclx},title=#{title},content=#{content},employeeObj=#{employeeObj.employeeNo},jcsj=#{jcsj} where jcId = #{jcId}
+	</update>
+
+	<!-- 删除员工奖惩记录 -->
+	<delete id="deleteYgjc" parameterType="int">
+		delete from t_ygjc where jcId=#{jcId}
+	</delete>
+
+</mapper>

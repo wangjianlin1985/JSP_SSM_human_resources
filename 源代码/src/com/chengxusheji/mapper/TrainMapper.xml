@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.TrainMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加公司培训记录 -->
+	<insert id="addTrain" parameterType="train">
+		insert into t_train(trainName,trainPurpose,startTime,endTime,teacher,personNum,trainContent,trainMemo) values 
+		(#{trainName},#{trainPurpose},#{startTime},#{endTime},#{teacher},#{personNum},#{trainContent},#{trainMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询公司培训记录 -->
+	<select id="queryTrain" resultMap="trainMap" >
+		select t_train.* from t_train ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="trainMap" type="train">
+        <id property="trainId" column="trainId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有公司培训记录 -->
+	<select id="queryTrainList" resultMap="trainMap" >
+		select t_train.* from t_train ${where}
+	</select>
+
+    <!-- 按照查询条件的公司培训记录数 -->
+	<select id="queryTrainCount" resultType="int">
+		select count(*) from t_train ${where}
+	</select>
+
+	<!-- 根据主键查询某个公司培训记录 -->
+	<select id="getTrain" parameterType="int" resultMap="trainMap">
+		select * from t_train where t_train.trainId = #{trainId}
+	</select>
+
+	<!-- 更新公司培训记录 -->
+	<update id="updateTrain" parameterType="train">
+		update t_train set trainName=#{trainName},trainPurpose=#{trainPurpose},startTime=#{startTime},endTime=#{endTime},teacher=#{teacher},personNum=#{personNum},trainContent=#{trainContent},trainMemo=#{trainMemo} where trainId = #{trainId}
+	</update>
+
+	<!-- 删除公司培训记录 -->
+	<delete id="deleteTrain" parameterType="int">
+		delete from t_train where trainId=#{trainId}
+	</delete>
+
+</mapper>

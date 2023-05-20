@@ -1,0 +1,49 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ContractMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加员工合同记录 -->
+	<insert id="addContract" parameterType="contract">
+		insert into t_contract(contractNo,employeeObj,htlx,startTime,endTime,content,htwj) values 
+		(#{contractNo},#{employeeObj.employeeNo},#{htlx},#{startTime},#{endTime},#{content},#{htwj})
+	</insert>
+
+	<!-- 按照查询条件分页查询员工合同记录 -->
+	<select id="queryContract" resultMap="contractMap" >
+		select t_contract.* from t_contract,t_employee ${where} and t_contract.employeeObj = t_employee.employeeNo limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="contractMap" type="contract">
+        <id property="contractNo" column="contractNo" />
+        <association property="employeeObj" column="employeeObj" select="com.chengxusheji.mapper.EmployeeMapper.getEmployee" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有员工合同记录 -->
+	<select id="queryContractList" resultMap="contractMap" >
+		select t_contract.* from t_contract,t_employee ${where} and t_contract.employeeObj = t_employee.employeeNo
+	</select>
+
+    <!-- 按照查询条件的员工合同记录数 -->
+	<select id="queryContractCount" resultType="int">
+		select count(*) from t_contract,t_employee ${where} and t_contract.employeeObj = t_employee.employeeNo
+	</select>
+
+	<!-- 根据主键查询某个员工合同记录 -->
+	<select id="getContract" parameterType="string" resultMap="contractMap">
+		select * from t_contract where t_contract.contractNo = #{contractNo}
+	</select>
+
+	<!-- 更新员工合同记录 -->
+	<update id="updateContract" parameterType="contract">
+		update t_contract set employeeObj=#{employeeObj.employeeNo},htlx=#{htlx},startTime=#{startTime},endTime=#{endTime},content=#{content},htwj=#{htwj} where contractNo = #{contractNo}
+	</update>
+
+	<!-- 删除员工合同记录 -->
+	<delete id="deleteContract" parameterType="string">
+		delete from t_contract where contractNo=#{contractNo}
+	</delete>
+
+</mapper>
